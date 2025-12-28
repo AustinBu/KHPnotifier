@@ -89,7 +89,7 @@ def run_action_check():
     cookies = load_cookies_from_file()
     current_is_maintenance, text = check_game_status(cookies) 
 
-    print(text)
+    print(f"Text: {text}")
     
     current_status_str = "down" if current_is_maintenance else "up"
     
