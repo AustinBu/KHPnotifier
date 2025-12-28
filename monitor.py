@@ -82,30 +82,29 @@ def check_game_status(cookies):
             browser.close()
             return False, f"Error: {str(e)}"
 
-def run():
+def run_action_check():
     webhook = os.getenv("DISCORD_WEBHOOK")
     notifier = DiscordNotifier(webhook)
     
     cookies = load_cookies_from_file()
-    current_status = check_game_status(cookies)
+    current_is_maintenance = check_game_status(cookies) 
     
-    if current_status is None:
-        print("Check failed. Skipping notification.")
-        return
-
+    current_status_str = "down" if current_is_maintenance else "up"
+    
     status_file = "last_status.txt"
     last_status = None
     if os.path.exists(status_file):
         with open(status_file, "r") as f:
-            last_status = f.read().strip() == "True"
+            last_status = f.read().strip()
 
-    if current_status != last_status:
-        notifier.alert_status_change(current_status)
+    if current_status_str != last_status:
+        notifier.alert_status_change(current_is_maintenance)
+        
         with open(status_file, "w") as f:
-            f.write(str(current_status))
-        print(f"Status changed to: {'Maintenance' if current_status else 'Online'}")
+            f.write(current_status_str)
+        print(f"Status changed from {last_status} to {current_status_str}. Notified Discord.")
     else:
-        print("Status unchanged. No notification sent.")
+        print(f"No change. Game is still {current_status_str}. Skipping notification.")
 
 if __name__ == "__main__":
-    run()
+    run_action_check()
