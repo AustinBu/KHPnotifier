@@ -68,6 +68,8 @@ def check_game_status(cookies):
 
                 game_frame.wait_for_selector("body", timeout=15000)
                 body_text = game_frame.inner_text("title").lower()
+
+                print(body_text)
                 
                 maintenance_keywords = ["maintenance", "temporarily unavailable", "update"]
                 is_maintenance = any(k in body_text for k in maintenance_keywords)
