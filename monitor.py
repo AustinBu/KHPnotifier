@@ -68,8 +68,6 @@ def check_game_status(cookies):
 
                 game_frame.wait_for_selector("body", timeout=15000)
                 body_text = game_frame.inner_text("title").lower()
-
-                print(body_text)
                 
                 maintenance_keywords = ["maintenance", "temporarily unavailable", "update"]
                 is_maintenance = any(k in body_text for k in maintenance_keywords)
@@ -89,7 +87,9 @@ def run_action_check():
     notifier = DiscordNotifier(webhook)
     
     cookies = load_cookies_from_file()
-    current_is_maintenance = check_game_status(cookies) 
+    current_is_maintenance, text = check_game_status(cookies) 
+
+    print(text)
     
     current_status_str = "down" if current_is_maintenance else "up"
     
