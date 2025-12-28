@@ -14,12 +14,22 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          playwright install chromium --with-deps
-
+          playwright install-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != 'true' ]; then
+            playwright install chromium
+          fi
       - name: Create Cookies File
         run: echo '${{ secrets.COOKIES_JSON }}' > cookies.json
 
